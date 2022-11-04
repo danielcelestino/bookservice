@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import br.com.daniel.model.Book;
+import br.com.daniel.proxy.CambioProxy;
 import br.com.daniel.repository.BookRepository;
 import br.com.daniel.response.Cambio;
 
@@ -24,7 +25,10 @@ public class BookController {
 	@Autowired
 	private BookRepository repository;
 	
-	@GetMapping(value = "/{id}/{currency}")
+	@Autowired
+	private CambioProxy proxy;
+	
+	/*@GetMapping(value = "/{id}/{currency}")
 	public Book findById(
 			@PathVariable("id") Long id,
 			@PathVariable("currency") String currency) {
@@ -37,6 +41,20 @@ public class BookController {
 		params.put("to", currency);
 		var response = new RestTemplate().getForEntity("http://localhost:8000/cambio-service/{amount}/{from}/{to}", Cambio.class, params);
 		Cambio cambio = response.getBody();
+		var port = environment.getProperty("local.server.port");
+		book.setPrice(cambio.getConvertedValue());
+		book.setEnvironment(port);
+		return book;
+	}*/
+	
+	@GetMapping(value = "/{id}/{currency}")
+	public Book findById(
+			@PathVariable("id") Long id,
+			@PathVariable("currency") String currency) {
+		var book = repository.findById(id).get();
+		if(book == null) throw new RuntimeException("Book not found!");
+		
+		var cambio = proxy.getCambio(book.getPrice(), "USD", currency);
 		var port = environment.getProperty("local.server.port");
 		book.setPrice(cambio.getConvertedValue());
 		book.setEnvironment(port);
