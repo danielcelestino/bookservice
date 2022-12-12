@@ -11,6 +11,8 @@ resilience4j:
     instances:
       foo-bar-att:
         max-attempts: 5
+        wait-duration: 1s
+        enable-exponential-backoff: true
       default:
         max-attempts: 5
 spring:
