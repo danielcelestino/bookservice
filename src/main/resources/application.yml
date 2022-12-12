@@ -7,11 +7,10 @@ eureka:
   instance:
     hostname: localhost
 resilience4j:
-  ratelimiter:
+  bulkhead:
     instances:
       default:
-        limit-for-period: 2
-        limit-refresh-period: 10s  
+        max-concurrent-calls: 10  
   retry:
     instances:
       foo-bar-att:
