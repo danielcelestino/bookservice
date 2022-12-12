@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 
 /*
  * Classe para testar possiveis problemas em ambientes de alta complexidade com microserviços
@@ -24,12 +25,13 @@ public class FooBarController {
 	@GetMapping("/foo-bar")
 //	@Retry(name = "default") //tenta 3 vezes antes de fechar
 //	@Retry(name = "foo-bar-att", fallbackMethod = "fallbackMethod1") //tenta 5 vezes antes de fechar por application.yml
-	@CircuitBreaker(name = "default", fallbackMethod = "fallbackMethod1") //pode ser testdo com power shell. Ele não envia todas as requisições e acaba filtrando algumas    ------   no power shell:   while(1) {curl http://localhost:8765/book-service/foo-bar; sleep 0.1}
+//	@CircuitBreaker(name = "default", fallbackMethod = "fallbackMethod1") //pode ser testdo com power shell. Ele não envia todas as requisições e acaba filtrando algumas    ------   no power shell:   while(1) {curl http://localhost:8765/book-service/foo-bar; sleep 0.1}
+	@RateLimiter(name = "default") //define com application.yml quantas requisições podem ser feitas e qual periodo ---   no power shell:   while(1) {curl http://localhost:8765/book-service/foo-bar; sleep 0.1}
 	public String fooBar() {
 		logger.info("Request to foo-bar is received!");
-		ResponseEntity<String> forEntity = new RestTemplate().getForEntity("http://localhost:8080/foo-bar", String.class); //Provocando erro com endereço inexistente
-//		return "Foo-bar!!!";
-		return "################################################ " + forEntity.getBody();
+//		ResponseEntity<String> forEntity = new RestTemplate().getForEntity("http://localhost:8080/foo-bar", String.class); //Provocando erro com endereço inexistente
+		return "Foo-bar!!!";
+//		return "################################################ " + forEntity.getBody();
 	}
 	
 	public String fallbackMethod1(Exception ex) {
