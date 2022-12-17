@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.daniel.model.Book;
 import br.com.daniel.proxy.CambioProxy;
 import br.com.daniel.repository.BookRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "Book endpoint")
 @RestController
 @RequestMapping(value = "book-service")
 public class BookController {
@@ -43,6 +46,7 @@ public class BookController {
 		return book;
 	}*/
 	
+	@Operation(summary = "Find a specific book by your ID")
 	@GetMapping(value = "/{id}/{currency}")
 	public Book findById(
 			@PathVariable("id") Long id,
